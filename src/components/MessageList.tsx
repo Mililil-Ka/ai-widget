@@ -3,9 +3,15 @@ import type { Message } from '../types/chat';
 
 interface MessageListProps {
   messages: Message[];
+  greeting?: string;
+  primaryColor?: string;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({
+  messages,
+  greeting,
+  primaryColor = '#3b82f6',
+}: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,8 +20,16 @@ export function MessageList({ messages }: MessageListProps) {
 
   if (messages.length === 0) {
     return (
-      <div className="text-center text-gray-400 text-sm py-8">
-        Начните диалог — задайте вопрос
+      <div className="p-4">
+        {greeting ? (
+          <div className="self-start max-w-[80%] bg-gray-100 text-gray-800 px-4 py-2 rounded-2xl text-sm">
+            {greeting}
+          </div>
+        ) : (
+          <div className="text-center text-gray-400 text-sm py-8">
+            Начните диалог — задайте вопрос
+          </div>
+        )}
       </div>
     );
   }
@@ -26,9 +40,14 @@ export function MessageList({ messages }: MessageListProps) {
         <div
           key={message.id}
           className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${message.role === 'user'
-            ? 'self-end bg-blue-500 text-white'
-            : 'self-start bg-gray-100 text-gray-800'
+              ? 'self-end text-white'
+              : 'self-start bg-gray-100 text-gray-800'
             }`}
+          style={
+            message.role === 'user'
+              ? { backgroundColor: primaryColor }
+              : undefined
+          }
         >
           {message.content}
         </div>

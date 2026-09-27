@@ -17,5 +17,6 @@ export interface ChatTheme {
   primaryColor?: string;
   avatarUrl?: string;
   greeting?: string;
+  title?: string;
   position?: 'bottom-right' | 'bottom-left';
 }
