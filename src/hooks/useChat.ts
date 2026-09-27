@@ -1,12 +1,33 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Message } from '../types/chat';
 import { streamChat } from '../api/chatApi';
 
+const STORAGE_KEY = 'ai-widget-messages';
+
+function loadMessages(): Message[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed;
+  } catch {
+    return [];
+  }
+}
+
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => loadMessages());
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isStreamingRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch {
+    }
+  }, [messages]);
 
   const sendMessage = useCallback(async (text: string) => {
     if (isStreamingRef.current) return;
@@ -59,6 +80,10 @@ export function useChat() {
     setError(null);
     setIsStreaming(false);
     isStreamingRef.current = false;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+    }
   }, []);
 
   return { messages, isStreaming, error, sendMessage, reset };

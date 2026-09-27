@@ -6,10 +6,9 @@ import { FallbackForm } from './FallbackForm';
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const { messages, isStreaming, error, sendMessage } = useChat();
+  const { messages, isStreaming, error, sendMessage, reset } = useChat();
 
   function handleFallbackSubmit(data: { name: string; phone: string }) {
-    // Пока просто логируем. Позже отправим на бэкенд или в Telegram.
     console.log('Заявка из fallback:', data);
   }
 
@@ -19,13 +18,25 @@ export function ChatWidget() {
         <div className="mb-4 w-80 h-96 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border">
           <div className="bg-blue-500 text-white px-4 py-3 flex justify-between items-center">
             <span className="font-semibold text-sm">AI-помощник</span>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:opacity-75 text-lg leading-none"
-              aria-label="Закрыть чат"
-            >
-              ×
-            </button>
+            <div className="flex items-center gap-3">
+              {messages.length > 0 && (
+                <button
+                  onClick={reset}
+                  className="text-white hover:opacity-75 text-xs"
+                  aria-label="Очистить историю"
+                  title="Очистить историю"
+                >
+                  Очистить
+                </button>
+              )}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white hover:opacity-75 text-lg leading-none"
+                aria-label="Закрыть чат"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 min-h-0">
