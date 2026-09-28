@@ -12,11 +12,23 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors({ origin: 'http://localhost:5173' }));
-app.use(express.json());
+const allowedOrigins = [
+  'http://localhost:5173',                          
+  'https://ai-widget.vercel.app',                   
+  'https://my-portfolio-three-ochre-60.vercel.app',   
+];
 
-console.log('Ключ виден:', !!process.env.OPENAI_API_KEY);
-console.log('Начинается с:', process.env.OPENAI_API_KEY?.slice(0, 10));
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error(`CORS: origin ${origin} не разрешён`));
+    },
+  })
+);
+
+app.use(express.json());
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
